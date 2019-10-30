@@ -3,14 +3,16 @@
 import re
 from typing import Match, Iterator, Tuple
 
-#-------- Thinking ----------#
+# -------- Thinking ----------#
 
-# This part is not used in code. Just to let me revisit how the Vietmese word structure looks like, to give idea how to parse it.
+# This part is not used in code. Just to let me revisit how the Vietmese word structure looks like,
+# to give idea how to parse it.
 
 INITIAL_CONSONANT = ('b', 'c', 'ch', 'd', 'g', 'gh', 'k', 'kh', 'l', 'm', 'n', 'ng', 'p', 'ph',
-                     'q', 'r', 's', 't', 'th', 'v', 'x', 'y')
+                     'q', 'r', 's', 't', 'th', 'v', 'x',)
+# Note: p can only go with vowel "i" (pin).
 
-FINAL_CONSONANT = ('c', 'ch', 'm', 'n', 'ng', 'nh', 't', 'th')
+FINAL_CONSONANT = ('c', 'ch', 'm', 'n', 'ng', 'nh', 'p', 't', )
 
 
 PAT_INITIAL_CONSONANT = r'[bcdgklmnpqrstvx](?:(?<=n)g)?(?:(?<=[cgkpt])h)?(?=[aeiou])'
@@ -23,10 +25,10 @@ REGEX_FINAL_CONSONANT = re.compile(PAT_FINAL_CONSONANT)
 
 # ----- Actual code ----- #
 
-REGEX_WORD = re.compile(r'(?P<initial_consonant>[bcdghklmnpqrstvxy]*((?<=n)g)?((?<=[cgkpt])h)?)'
+REGEX_WORD = re.compile(r'(?P<initial_consonant>[bcdghklmnpqrstvx]*((?<=n)g)?((?<=[cgkpt])h)?)'
                         r'(?P<vowel>oai|uoi|uye|uya|ieu|uay|oeo|uyu'
-                        r'|ai|ao|au|ay|eo|eu|ia|ie|iu|oa|oe|oi|sua|ue|ui|uo|uy|[aeiouy])'
-                        r'(?P<final_consonant>[cmnt]?((?<=[cnt])h|(?<=n)g)?)', re.IGNORECASE)
+                        r'|ai|ao|au|ay|eo|eu|ia|ie|iu|oa|oe|oi|sua|ue|ui|uo|uy|ye|[aeiouy])'
+                        r'(?P<final_consonant>(?<!oe)ng|nh|ch|c|m|n|p|t?)', re.IGNORECASE)
 
 
 def iter_split_words(string: str) -> Iterator[Match]:

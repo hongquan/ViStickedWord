@@ -13,7 +13,17 @@ compound_data = (
     ('ueoai', ('ue', 'oai')),
     ('ngoannghoeo', ('ngoan', 'nghoeo')),
     ('khuckhuyu', ('khuc', 'khuyu')),
-    ('Yentiec', ('Yen', 'tiec')),
+    ('BinhYen', ('Binh', 'Yen')),
+    ('yanhsao', ('y', 'anh', 'sao')),
+    ('thinhthich', ('thinh', 'thich')),
+    ('quyetliet', ('quyet', 'liet')),
+    ('chichchoac', ('chich', 'choac')),
+    ('yena', ('yen', 'a')),
+    ('hothahothai', ('hot', 'ha', 'hot', 'hai')),
+    ('laploe', ('lap', 'loe')),
+    ('pincono', ('pin', 'con', 'o')),
+    ('chimvanhkhuyen', ('chim', 'vanh', 'khuyen')),
+    # ('ngoenguay', ('ngoe', 'nguay')) FIXME
 )
 
 
