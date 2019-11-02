@@ -23,7 +23,8 @@ compound_data = (
     ('laploe', ('lap', 'loe')),
     ('pincono', ('pin', 'con', 'o')),
     ('chimvanhkhuyen', ('chim', 'vanh', 'khuyen')),
-    # ('ngoenguay', ('ngoe', 'nguay')) FIXME
+    ('daothanh', ('dao', 'thanh')),
+    ('ngoenguay', ('ngoe', 'nguay')),
 )
 
 

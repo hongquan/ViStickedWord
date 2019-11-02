@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vistickedword"
-version = "0.8"
+version = "0.9"
 description = "Library to split sticked Vietnamese words"
 authors = ["Nguyễn Hồng Quân <ng.hong.quan@gmail.com>"]
 license = "MIT"

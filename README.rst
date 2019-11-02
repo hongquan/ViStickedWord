@@ -17,6 +17,14 @@ Do nhu cầu cá nhân nên hiện tại thư viện không xử lý từ có đ
 
 Để thuận tiện cho việc lập trình, một số thuật ngữ không được dùng chính xác như cách dùng bên ngôn ngữ học. Vui lòng đừng xem code của tôi là nguồn tài liệu học ngữ pháp tiếng Việt.
 
+Install
+-------
+
+.. code-block:: sh
+
+    pip install vistickedword
+
+
 Usage
 -----
 
