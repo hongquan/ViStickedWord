@@ -8,12 +8,12 @@ from collections import namedtuple
 from typing import Match, Tuple, Sequence, List, Optional
 
 
-__version__ = '0.9'
+__version__ = '0.9.1'
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 ALL_INITIAL_CONSONANT = frozenset(('b', 'c', 'ch', 'd', 'g', 'gh', 'h', 'kh', 'l', 'm', 'n', 'nh', 'ng',
-                                   'ngh', 'p', 'ph', 'q', 'r', 's', 't', 'th', 'v', 'x'))
+                                   'ngh', 'p', 'ph', 'q', 'r', 's', 't', 'th', 'tr', 'v', 'x'))
 COMMON_INITIAL_CONSONANT = ALL_INITIAL_CONSONANT - {'gh', 'ngh', 'p', 'q'}
 
 POSSIBLE_INITIAL_CONSONANTS = {
@@ -31,15 +31,17 @@ POSSIBLE_INITIAL_CONSONANTS = {
     'uyu': frozenset(['kh']),
     'ai': COMMON_INITIAL_CONSONANT | {None},
     'ao': COMMON_INITIAL_CONSONANT | {None},
-    'eo': COMMON_INITIAL_CONSONANT | {None},
+    'eo': COMMON_INITIAL_CONSONANT | {'ngh', 'gh', None},
+    'eu': COMMON_INITIAL_CONSONANT,
     'ia': frozenset(['g']),
     'ie': COMMON_INITIAL_CONSONANT | {'gh', 'ngh'} - {'c', 'ng'},
-    'oa': frozenset((None, 'b', 'ch', 'l', 'n', 't')),
+    'oa': frozenset((None, 'b', 'ch', 'h', 'kh', 'l', 'n', 'ng', 't')),
     'oe': frozenset((None, 'kh', 'l', 'nh', 'ng', 'h', 't')),
     'ua': COMMON_INITIAL_CONSONANT | {None, 'q'},
     'ue': frozenset((None, 'h', 'kh', 'q' 't', 'th')),
     'ui': COMMON_INITIAL_CONSONANT | {None, 'q'},
-    'uo': frozenset(('ch', 'd', 'kh', 'h', 'l', 'm', 'ng', 'th')),
+    'uo': COMMON_INITIAL_CONSONANT | {None},
+    'uu': COMMON_INITIAL_CONSONANT | {None},
     'uy': frozenset((None, 'h', 'q')),
     'a': COMMON_INITIAL_CONSONANT | {None},
     'e': ALL_INITIAL_CONSONANT | {None} - {'g', 'ng', 'p', 'q'},
@@ -53,27 +55,35 @@ ALL_POSSIBLE_FINAL_CONSONANTS = frozenset(('c', 'ch', 'm', 'n', 'nh', 'ng', 'p',
 POSSIBLE_FINAL_CONSONANTS = {
     'uye': frozenset(('n', 'nh', 't')),
     # This case, the actual initial consonant is "gi"
-    'ia': ALL_POSSIBLE_FINAL_CONSONANTS - {'ch', 'th'},
+    'ia': ALL_POSSIBLE_FINAL_CONSONANTS - {'ch', 'th', None},
     'ie': ALL_POSSIBLE_FINAL_CONSONANTS - {'ch', 'th'},
-    'oa': ALL_POSSIBLE_FINAL_CONSONANTS - {'th'},
+    'oa': ALL_POSSIBLE_FINAL_CONSONANTS | {None} - {'th'},  # m: "oai oam"
     'oe': frozenset(('n', 't', None)),
-    'ua': frozenset(('n', 'ng', 't')),
-    'ue': frozenset(['n']),  # quen
-    'uo': frozenset(('c', 'm', 'n', 'ng', 't')),
-    'uy': frozenset(('ch', 'n', 'nh', 't')),
+    'ua': frozenset(('m', 'n', 'ng', 't', None)),   # m: "dao quam"
+    'ue': frozenset(('n', None)),  # quen, que
+    'uo': frozenset(('c', 'm', 'n', 'ng', 'p', 't', None)),
+    'uy': frozenset(('ch', 'n', 'nh', 't', None)),
     'ye': frozenset(('m', 'n', 't')),
-    'a': ALL_POSSIBLE_FINAL_CONSONANTS - {'th'},
-    'e': ALL_POSSIBLE_FINAL_CONSONANTS - {'nh', 'th'},
-    'i': frozenset(('ch', 'm', 'n', 'nh', 'p', 't')),
-    'o': frozenset(('c', 'm', 'n', 'ng', 'p', 't')),
-    'u': frozenset(('c', 'm', 'n', 'ng', 'p', 't')),
+    'a': ALL_POSSIBLE_FINAL_CONSONANTS | {None} - {'th'},
+    'e': ALL_POSSIBLE_FINAL_CONSONANTS | {None} - {'nh', 'th'},
+    'i': frozenset(('ch', 'm', 'n', 'nh', 'p', 't', None)),
+    'o': frozenset(('c', 'm', 'n', 'ng', 'p', 't', None)),
+    'u': frozenset(('c', 'm', 'n', 'ng', 'p', 't', None)),
 }
 
 ILLEGAL_COMBINATION = {
-    'ue': {
-        'final': 'n',  # Can only be: quen
-        'initial': ALL_INITIAL_CONSONANT - {'q'}
-    }
+    'ue': (
+        {
+            'final': 'n',  # Can only be: quen
+            'initial': ALL_INITIAL_CONSONANT - {'q'}
+        },
+    ),
+    'oa': (
+        {
+            'final': 'm',  # Can only be: oam
+            'initial': ALL_INITIAL_CONSONANT,
+        },
+    )
 }
 
 
@@ -116,6 +126,14 @@ class WordPosition:
     should_negotiate_precedence: bool = False
 
 
+class IllegalCombination(ValueError):
+    pass
+
+
+class ConfusingState(ValueError):
+    pass
+
+
 def build_word(p: WordPosition, original_word_sequence: str) -> VietSingleWord:
     vowel = original_word_sequence[p.start_vowel:p.end_vowel]
     initial_consonant = original_word_sequence[p.start:p.start_vowel]
@@ -127,6 +145,31 @@ def build_word(p: WordPosition, original_word_sequence: str) -> VietSingleWord:
     )
 
 
+def find_initial_consonant(vowel: str, final_consonant: str,
+                           leading_source: str, test_initial_consonants: Sequence[str]) -> str:
+    for con in test_initial_consonants:
+        if con is not None and leading_source.lower().endswith(con.lower()):
+            # Found initial consonant
+            initial_consonant = con
+            break
+    # Not found initial consonant from leading source
+    else:
+        logger.error('Not found initial consonant for "%s" from "%s"', vowel, leading_source)
+        raise ConfusingState
+    if not final_consonant:
+        return initial_consonant
+    # Check if this combination is illegal
+    if vowel in ILLEGAL_COMBINATION:
+        illegal_combinations = ILLEGAL_COMBINATION[vowel]
+        prohibited = (c['initial'] for c in illegal_combinations if c['final'] == final_consonant)
+        illegal_initials = next(prohibited, ())
+        if initial_consonant.lower() in illegal_initials:
+            logger.error('Combination of ("%s", "%s", "%s") is illegal.',
+                         initial_consonant, vowel, final_consonant)
+            raise IllegalCombination
+    return initial_consonant
+
+
 def scan_for_word(i: int, vowel_match: Match, vowel_occurences: Sequence[Match],
                   word_positions: List[WordPosition], original_word_sequence: str) -> WordPosition:
     '''Scan for initial and final consonant, determine position of components in original word sequences'''
@@ -135,56 +178,73 @@ def scan_for_word(i: int, vowel_match: Match, vowel_occurences: Sequence[Match],
     pos_end_vowel = vowel_match.end(0)
     word_pos = WordPosition(start=pos_start_vowel, end=pos_end_vowel,
                             start_vowel=pos_start_vowel, end_vowel=pos_end_vowel)
-    # Look for initial consonant
+    final_consonant = None
     try:
-        test_consonants = sort_longer(POSSIBLE_INITIAL_CONSONANTS[vowel])
-        try:
-            prev_word = word_positions[i - 1]
-            start_scan = prev_word.end
-        except IndexError:
-            start_scan = 0
-        leading_part = original_word_sequence[start_scan:pos_start_vowel]
-        for con in test_consonants:
-            if con is not None and leading_part.endswith(con):
-                # Found initial consonant
-                word_pos.start = pos_start_vowel - len(con)
-                break
-        else:
-            # Possible consonant for this vowel doesn't match the leading part.
-            logger.error('Confused. Leading part "%s" does not seem to be initial consonant of "%s"',
-                         leading_part, vowel)
-            word_pos.start -= len(leading_part)
-            word_pos.should_negotiate_precedence = True
+        test_initial_consonants = sort_longer(POSSIBLE_INITIAL_CONSONANTS[vowel])
     except KeyError:
-        # No need initial consonant
-        pass
+        test_initial_consonants = ()
+    try:
+        prev_word = word_positions[i - 1]
+        start_scan = prev_word.end
+    except IndexError:
+        start_scan = 0
+    leading_source = original_word_sequence[start_scan:pos_start_vowel]
+
+    # We determine final consonant first, because some initial consonants are valid or invalid subject to final one.
     # Look for final consonant
     try:
-        test_consonants = sort_longer(POSSIBLE_FINAL_CONSONANTS[vowel])
-        rest_seq = original_word_sequence[pos_end_vowel:]
-        for con in test_consonants:
-            if con is not None and rest_seq.startswith(con):
-                # Determined final consonant of this word
-                word_pos.end = pos_end_vowel + len(con)
-                break
-        else:
-            # No final consonant
-            pass
+        test_final_consonants = sort_longer(POSSIBLE_FINAL_CONSONANTS[vowel])
     except KeyError:
         # This vowel doesn't need final consonant
-        pass
-    # May resolve confusion be get more letter from precedence word
-    # Here: "ngoenguay" is split to ("ngoen", "guay").
-    # We will take letters from "ngoen", preprending to "guay"
-    if word_pos.should_negotiate_precedence:
-        negotiate_expand_consonant(word_pos, word_positions, original_word_sequence)
+        test_final_consonants = ()
+
+    rest_seq = original_word_sequence[pos_end_vowel:]
+    # If rest_seq is empty, no need to scan for final consonant
+    if rest_seq:
+        for con in test_final_consonants:
+            if con is None:
+                word_pos.end = word_pos.end_vowel
+                break
+            if rest_seq.lower().startswith(con.lower()):
+                # Determined final consonant of this word
+                final_consonant = con
+                word_pos.end = pos_end_vowel + len(final_consonant)
+                logger.debug('"%s" seems to be final consonant', final_consonant)
+                if not leading_source:
+                    break
+                if test_initial_consonants:
+                    try:
+                        initial_consonant = find_initial_consonant(vowel, final_consonant, leading_source,
+                                                                   test_initial_consonants)
+                    except ConfusingState:
+                        word_pos.start = word_pos.start_vowel - len(leading_source)
+                        success = negotiate_expand_consonant(word_pos, word_positions, original_word_sequence)
+                        if not success:
+                            continue
+                    except IllegalCombination:
+                        continue
+                    word_pos.start = pos_start_vowel - len(initial_consonant)
+                break
+    # Not found final consonant
+    if test_final_consonants and None not in test_final_consonants:  # This vowel can go without final consonant
+        logger.error('This vowel "%s" needs a final consonant, but could not found in "%s".',
+                     vowel, rest_seq)
+    # Even when final consonant is not needed, still need to find initial
+    elif leading_source:
+        try:
+            initial_consonant = find_initial_consonant(vowel, None, leading_source,
+                                                       test_initial_consonants)
+            word_pos.start = pos_start_vowel - len(initial_consonant)
+        except ConfusingState:
+            word_pos.start = word_pos.start_vowel - len(leading_source)
+            negotiate_expand_consonant(word_pos, word_positions, original_word_sequence)
     # Save position of this word
     word_positions.append(word_pos)
     return word_pos
 
 
 def negotiate_expand_consonant(word_pos: WordPosition, word_positions: List[WordPosition],
-                               original_word_sequence: str) -> Tuple[WordPosition]:
+                               original_word_sequence: str) -> bool:
     # Example: "ngoenguay" is split to ("ngoen", "guay").
     # We will take letters from "ngoen", preprending to "guay" to get better result
     try:
@@ -193,7 +253,6 @@ def negotiate_expand_consonant(word_pos: WordPosition, word_positions: List[Word
         vowel = original_word_sequence[word_pos.start_vowel:word_pos.end_vowel]
         test_initial_consonants = sort_longer(POSSIBLE_INITIAL_CONSONANTS[vowel])
         test_final_consonants = sort_longer(POSSIBLE_FINAL_CONSONANTS[prev_vowel])
-        logger.debug('Loop i over %s', tuple(range(prev_pos.end - 1, prev_pos.end_vowel - 1, -1)))
         for i in range(prev_pos.end - 1, prev_pos.end_vowel - 1, -1):
             expanded_consonant = original_word_sequence[i:word_pos.start_vowel] or None
             shrunk_consonant = original_word_sequence[prev_pos.end_vowel:i] or None
@@ -201,7 +260,7 @@ def negotiate_expand_consonant(word_pos: WordPosition, word_positions: List[Word
                 # Negotiated
                 word_pos.start = i
                 prev_pos.end = i
-                return prev_pos, word_pos
+                return True
         else:
             # Negotiation failed
             logger.error('Negotiation failed.')
@@ -209,11 +268,11 @@ def negotiate_expand_consonant(word_pos: WordPosition, word_positions: List[Word
         logger.error('Previous word does not exist.')
     except KeyError:
         logger.error('Previous word doesnot need final consonant')
+    return False
 
 
 def parse(wordseq: str):
-    logger.debug('Regex: %s', REGEX_VOWEL)
-    occurences: Sequence[Match] = tuple(REGEX_VOWEL.finditer(wordseq))
+    occurences: Sequence[Match] = tuple(REGEX_VOWEL.finditer(wordseq.lower()))
     logger.debug('Vowel occurences: %s', occurences)
     word_positions: List[WordPosition] = []
     for i, match in enumerate(occurences):

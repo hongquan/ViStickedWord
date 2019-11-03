@@ -3,12 +3,12 @@ import pytest
 from vistickedword import split_words
 
 
+# Note: 'tuuyen' can be split to ('tu', 'uyen') and ('tuu', 'yen'). Both look valid.
 compound_data = (
     ('demkhuya', ('dem', 'khuya')),
     ('yenoanh', ('yen', 'oanh')),
     ('meohoang', ('meo', 'hoang')),
     ('hueoanh', ('hue', 'oanh')),
-    ('tuuyen', ('tu', 'uyen')),
     ('queanh', ('que', 'anh')),
     ('ueoai', ('ue', 'oai')),
     ('ngoannghoeo', ('ngoan', 'nghoeo')),
@@ -25,6 +25,17 @@ compound_data = (
     ('chimvanhkhuyen', ('chim', 'vanh', 'khuyen')),
     ('daothanh', ('dao', 'thanh')),
     ('ngoenguay', ('ngoe', 'nguay')),
+    ('hoamikhonghotnua', ('hoa', 'mi', 'khong', 'hot', 'nua')),
+    ('daoquam', ('dao', 'quam')),
+    ('oaioam', ('oai', 'oam')),
+    ('ngatngheo', ('ngat', 'ngheo')),
+    ('treugheo', ('treu', 'gheo')),
+    ('truongthanh', ('truong', 'thanh')),
+    ('uopca', ('uop', 'ca')),
+    ('khacghi', ('khac', 'ghi')),
+    ('khoanhkhac', ('khoanh', 'khac')),
+    ('vinhcuu', ('vinh', 'cuu')),
+    ('muonthuo', ('muon', 'thuo')),
 )
 
 
