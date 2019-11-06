@@ -11,7 +11,7 @@ compound_data = (
     ('hueoanh', ('hue', 'oanh')),
     ('queanh', ('que', 'anh')),
     ('ueoai', ('ue', 'oai')),
-    ('ngoannghoeo', ('ngoan', 'nghoeo')),
+    ('ngoanngoeo', ('ngoan', 'ngoeo')),
     ('khuckhuyu', ('khuc', 'khuyu')),
     ('BinhYen', ('Binh', 'Yen')),
     ('yanhsao', ('y', 'anh', 'sao')),
@@ -36,6 +36,13 @@ compound_data = (
     ('khoanhkhac', ('khoanh', 'khac')),
     ('vinhcuu', ('vinh', 'cuu')),
     ('muonthuo', ('muon', 'thuo')),
+    ('nguoitinhthuoxua', ('nguoi', 'tinh', 'thuo', 'xua')),
+    ('daorua', ('dao', 'rua')),
+    ('nhonguoimuonnamcu', ('nho', 'nguoi', 'muon', 'nam', 'cu')),
+    ('matbiec', ('mat', 'biec')),
+    # FIXME
+    # ('nhuangmaybay', ('nhu', 'ang', 'may', 'bay')),
+    ('giuvungniemtin', ('giu', 'vung', 'niem', 'tin')),
 )
 
 
