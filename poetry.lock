@@ -46,13 +46,20 @@ version = ">=2.2.0"
 pygments = ["Pygments (>=2.2.0)"]
 
 [[package]]
-category = "dev"
+category = "main"
+description = "Return the first true value of an iterable."
+name = "first"
+optional = false
+python-versions = "*"
+version = "2.0.2"
+
+[[package]]
+category = "main"
 description = "Read metadata from Python packages"
-marker = "python_version < \"3.8\""
 name = "importlib-metadata"
 optional = false
-python-versions = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3"
-version = "0.23"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+version = "1.5.0"
 
 [package.dependencies]
 zipp = ">=0.5"
@@ -62,7 +69,7 @@ docs = ["sphinx", "rst.linker"]
 testing = ["packaging", "importlib-resources"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
@@ -163,6 +170,18 @@ pytest = "*"
 tests = ["pytest-isort"]
 
 [[package]]
+category = "main"
+description = "Small utility to define version string for Poetry-style Python project."
+name = "single-version"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "1.1"
+
+[package.dependencies]
+first = ">=2.0.2,<3.0.0"
+importlib_metadata = ">=1.5.0,<2.0.0"
+
+[[package]]
 category = "dev"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
@@ -171,9 +190,8 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "1.12.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-marker = "python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=2.7"
@@ -187,7 +205,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "25371e766ee37ed44eeddf3811c994ed5d8b72bc9a892b8595d63cc954cd1059"
+content-hash = "e306bedee2d37505434cad118395f5854c1535363ca754b7a994ee1ad0c13270"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -207,9 +225,13 @@ devtools = [
     {file = "devtools-0.5.1-py35.py36-none-any.whl", hash = "sha256:7a1f7db6ade0a71840ca4014d75dd72390aed2ef04e39e2b2445af7b3a3f4679"},
     {file = "devtools-0.5.1.tar.gz", hash = "sha256:51ca8d2e15b8a862875a4837db2bafbc6cda409c069e960aec3f4bbd91fe9c08"},
 ]
+first = [
+    {file = "first-2.0.2-py2.py3-none-any.whl", hash = "sha256:8d8e46e115ea8ac652c76123c0865e3ff18372aef6f03c22809ceefcea9dec86"},
+    {file = "first-2.0.2.tar.gz", hash = "sha256:ff285b08c55f8c97ce4ea7012743af2495c9f1291785f163722bd36f6af6d3bf"},
+]
 importlib-metadata = [
-    {file = "importlib_metadata-0.23-py2.py3-none-any.whl", hash = "sha256:d5f18a79777f3aa179c145737780282e27b508fc8fd688cb17c7a813e8bd39af"},
-    {file = "importlib_metadata-0.23.tar.gz", hash = "sha256:aa18d7378b00b40847790e7c27e11673d7fed219354109d0e7b9e5b25dc3ad26"},
+    {file = "importlib_metadata-1.5.0-py2.py3-none-any.whl", hash = "sha256:b97607a1a18a5100839aec1dc26a1ea17ee0d93b20b0f008d80a5a050afb200b"},
+    {file = "importlib_metadata-1.5.0.tar.gz", hash = "sha256:06f5b3a99029c7134207dd882428a66992a9de2bef7c2b699b5641f9886c3302"},
 ]
 more-itertools = [
     {file = "more-itertools-7.2.0.tar.gz", hash = "sha256:409cd48d4db7052af495b09dec721011634af3753ae1ef92d2b32f73a745f832"},
@@ -245,6 +267,10 @@ pytest-flakes = [
 ]
 pytest-pycodestyle = [
     {file = "pytest-pycodestyle-1.4.0.tar.gz", hash = "sha256:d4f1c1d633158c1a27b02a40cf8e27da7264a9cbd6f59b5d692368e82412ac78"},
+]
+single-version = [
+    {file = "single-version-1.1.tar.gz", hash = "sha256:8c22c95fa756b97cf045dff9ecb6f24a7c33e82f5f9e27ae06d61b58fa405f67"},
+    {file = "single_version-1.1-py3-none-any.whl", hash = "sha256:c3587b1fa60216431419c3751a853a277d9b9aa68d69b5f94a3f1dac15d72a38"},
 ]
 six = [
     {file = "six-1.12.0-py2.py3-none-any.whl", hash = "sha256:3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c"},

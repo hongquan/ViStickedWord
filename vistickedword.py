@@ -2,14 +2,16 @@
 
 import re
 import logging
+from pathlib import Path
 from dataclasses import dataclass
 from itertools import chain
 from collections import namedtuple
 from typing import Match, Tuple, Sequence, List, Optional
 
+from single_version import get_version
 
-__version__ = '0.9.2'
-logging.basicConfig(level=logging.DEBUG)
+
+__version__ = get_version('vistickedword', Path(__file__).parent)
 logger = logging.getLogger(__name__)
 
 ALL_INITIAL_CONSONANT = frozenset(('b', 'c', 'ch', 'd', 'g', 'gh', 'h', 'kh', 'l', 'm', 'n', 'nh', 'ng',
