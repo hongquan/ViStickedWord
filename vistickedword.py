@@ -96,7 +96,7 @@ ILLEGAL_COMBINATION = {
 }
 
 
-def vlen(o: Optional[str]):
+def vlen(o: Optional[str]) -> int:
     try:
         return len(o)
     except TypeError:
@@ -232,6 +232,8 @@ def scan_for_word(i: int, vowel_match: Match, vowel_occurences: Sequence[Match],
                         success = negotiate_expand_consonant(word_pos, word_positions, original_word_sequence)
                         if not success:
                             continue
+                        else:
+                            break
                     except IllegalCombination:
                         logger.debug("Illegal combination. Test next possible final consonant.")
                         continue

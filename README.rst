@@ -2,6 +2,10 @@
 ViStickedWord
 =============
 
+.. image:: https://badgen.net/pypi/v/vistickedword
+   :target: https://pypi.org/project/vistickedword
+
+
 A library to split a string of many Vietnamese words sticked together to single words. It, for example, split "khuckhuyu" to "khuc" and "khuyu".
 This library is not supposed to split Vietnamese by semantics, so it won't differentiate single or compound words. It will not, for example, split "bacsitrongbenhvien" to "bac si" + "trong" + "benh vien".
 If you want such a feature, please use underthesea_.
@@ -39,5 +43,12 @@ Usage
     # Returns ('ngoan', 'ngoeo')
 
 
+Credit
+------
+
+Developed by by `Nguyễn Hồng Quân <author_>`_.
+
+
 .. _underthesea: https://github.com/undertheseanlp/underthesea
 .. _Unidecode: https://pypi.org/project/Unidecode/
+.. _author: https://quan.hoabinh.vn
