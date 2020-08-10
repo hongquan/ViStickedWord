@@ -37,6 +37,7 @@ POSSIBLE_INITIAL_CONSONANTS = {
     'eu': COMMON_INITIAL_CONSONANT,
     'ia': frozenset(['g']),
     'ie': COMMON_INITIAL_CONSONANT | {'gh', 'ngh'} - {'c', 'ng'},
+    'io': frozenset(['g']),
     'iu': frozenset(('ch', 'b', 'd', 'g', 'l', 'm', 'n', 'r', 't', 'th', 'x')),
     'oa': frozenset((None, 'b', 'ch', 'h', 'kh', 'l', 'n', 'ng', 't')),
     'oe': frozenset((None, 'kh', 'l', 'nh', 'ng', 'h', 't')),
@@ -257,7 +258,7 @@ def scan_for_word(i: int, vowel_match: Match, vowel_occurences: Sequence[Match],
         logger.debug('Vowel "%s" needs an initial consonant. Negotiate with precedence word.', vowel)
         negotiate_expand_consonant(word_pos, word_positions, original_word_sequence)
     else:
-        logger.debug("Skip finding initial consonant.")
+        logger.debug("Skip finding initial consonant for %s.", vowel_match)
     # Save position of this word
     word_positions.append(word_pos)
     return word_pos
@@ -287,7 +288,7 @@ def negotiate_expand_consonant(word_pos: WordPosition, word_positions: List[Word
     except IndexError:
         logger.error('Previous word does not exist.')
     except KeyError as e:
-        logger.error('Vowel %s cannot go with (initial) consonant', e)
+        logger.error('Vowel %s cannot go with initial consonant', e)
     return False
 
 

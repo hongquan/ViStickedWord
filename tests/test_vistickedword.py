@@ -40,6 +40,7 @@ compound_data = (
     ('daorua', ('dao', 'rua')),
     ('nhonguoimuonnamcu', ('nho', 'nguoi', 'muon', 'nam', 'cu')),
     ('matbiec', ('mat', 'biec')),
+    ('cangio', ('can', 'gio')),
     # FIXME
     # ('nhuangmaybay', ('nhu', 'ang', 'may', 'bay')),
     ('giuvungniemtin', ('giu', 'vung', 'niem', 'tin')),
